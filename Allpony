@@ -1,0 +1,57 @@
+-- create a new allpony table
+DROP TABLE IF EXISTS Allpony2 CASCADE;
+CREATE TABLE Allpony2 (
+	horse_id varchar(10),
+	name text,
+	birth_date date,
+	birth_year char(4),
+	sex varchar(1),
+	color varchar(10),
+	band varchar(7),
+	marks varchar(3),
+	how_marked text,
+	date_terminate date,
+	year_terminate char(4),
+	status varchar(12),
+	notes text,
+	sire_genetic varchar(6),
+	PRIMARY KEY (horse_id),--primary synthetic key
+	FOREIGN KEY (sire_genetic) REFERENCES Allpony2(horse_id)
+);
+INSERT INTO Allpony2 (horse_id, name, birth_date, birth_year, sex, color, band, marks, how_marked,
+					 date_terminate, year_terminate, status, notes, sire_genetic)
+SELECT horse_id, name, birth_date, date_part('year',to_date(text(birth_year),'YYYY')), sex, color,
+band, marks, howmarked, date_terminate, date_part('year',to_date(text(year_terminate),'YYYY')),
+status, notes, sire_genetic
+FROM allpony_restore; 
+SELECT * FROM Allpony2;
+
+-- which horses id appear in the observations tables that are not listed in the original allpony table
+SELECT distinct id 
+FROM banddata
+WHERE id IN (
+SELECT id
+FROM banddata
+EXCEPT
+SELECT horse_id  
+FROM allpony_restore
+);
+--inserting the missing horse ids in the Allpony2 table
+INSERT INTO Allpony2(horse_id)
+SELECT DISTINCT id 
+FROM banddata
+WHERE id IN (
+SELECT id
+FROM banddata
+EXCEPT
+SELECT horse_id  
+FROM allpony_restore
+);
+
+--testing relationship with the Concentration table
+SELECT con.horse_id, ap.name
+FROM Contraception AS con
+	JOIN Allpony2 AS ap
+		ON ap.horse_id = con.horse_id;
+-- select the Allpony2 table
+SELECT * FROM Allpony2;

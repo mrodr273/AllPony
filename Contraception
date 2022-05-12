@@ -1,0 +1,22 @@
+--DELETE TABLE IF IT EXISTS
+DROP TABLE IF EXISTS Contraception CASCADE;
+--CREATE CONTRACEPTION TABLE
+CREATE TABLE Contraception (
+	contraception_id SERIAL NOT NULL PRIMARY KEY,
+	horse_id varchar(10),
+	conthow char(7),
+	FOREIGN KEY (horse_id) REFERENCES Allpony2(horse_id) -- foreign key
+);
+-- INSERT DATA INTO CONTRACEPTION TABLE
+INSERT INTO Contraception ( horse_id, conthow)
+SELECT horse_id, comma_split(conthow)
+FROM allpony;
+
+--testing relationship with the Concentration table
+SELECT con.horse_id, ap.name
+FROM Contraception AS con
+	JOIN Allpony2 AS ap
+		ON ap.horse_id = con.horse_id;
+--SELECT THE CONTRACEPTION TABLE
+SELECT * FROM Contraception;
+

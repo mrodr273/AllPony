@@ -1,0 +1,32 @@
+--DELETE TABLE
+DROP TABLE IF EXISTS Observations CASCADE;
+--CREATE OBSERVATION TABLES
+CREATE TABLE Observations (
+	obs_id text,
+	date date,
+	horse_id varchar(10),
+	band varchar(10),
+	bandsize varchar(2),
+	utm_east text,
+	utm_north text,
+	habitat text,
+	location text,
+	zone varchar(2),
+	PRIMARY KEY (obs_id), --primary synthetic key 
+	FOREIGN KEY (horse_id) REFERENCES Allpony2(horse_id) -- foreign key
+);
+--ENTER DATA INTO THE OBSERVATION TABLE
+INSERT INTO Observations (obs_id, date, horse_id, band, bandsize, utm_east, utm_north, habitat, location,
+						 zone)
+SELECT ROW_NUMBER() OVER (Order by name), date(date), id, band, bandsize, utm_east, utm_north, habitat,
+location, zone
+FROM banddata;
+--TEST RELATIONSHIP TO THE ALLPONY2 TABLE
+SELECT Obs.horse_id, ap.name
+FROM Observations as Obs
+	JOIN Allpony2 AS ap
+		ON Obs.horse_id = ap.horse_id
+-- SELECT OBSERVATION TABLE
+SELECT * FROM Observations;
+
+

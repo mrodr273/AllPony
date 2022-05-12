@@ -1,0 +1,21 @@
+-- DROP TABLE IF IT EXISTS
+DROP TABLE IF EXISTS pony_test CASCADE;
+
+-- create a table with foals_produced values
+DROP TABLE IF EXISTS FoalsProduced;
+CREATE TABLE FoalsProduced (
+	horse_id	varchar(10) NOT NULL,
+	foals_produced	char(4) NOT NULL,
+	PRIMARY KEY (horse_id, foals_produced),  -- composite primary key
+	FOREIGN KEY (horse_id) REFERENCES Allpony2(horse_id) -- foreign key
+);
+INSERT INTO FoalsProduced (horse_id, foals_produced)
+SELECT horse_id, date_part('year',TO_DATE(comma_split(foals_produced), 'YY')) 
+FROM allpony;
+-- test to see if it works-detele
+SELECT FP.horse_id, ap.name
+FROM FoalsProduced AS FP
+	JOIN Allpony2 AS ap
+		ON FP.horse_id = ap.horse_id;
+--Final Foals Produces table
+select * from FoalsProduced;
